@@ -1,8 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "NeoPixelColor.h"
-#include "NeoPixelHandler.h"
+#include "PinballOutputHandler.h"
 
 /****************************************************************************
  * NeoPixelHandler class
@@ -10,7 +9,7 @@
 
 NeoPixelHandler::NeoPixelHandler(Adafruit_NeoPixel& p) : pixels(p), color(NeoPixelColor::RED),
 							 default_color(NeoPixelColor::RED){
-  debug("NeoPixelHandler::NeoPixelHandler()");
+  //debug("NeoPixelHandler::NeoPixelHandler()");
   this->off();
   this->handle();
 }
@@ -49,7 +48,7 @@ void NeoPixelHandler::handle() {
     break;    
     
   case BLINK_STATE_START:
-    debug("In BLINK_STATE_START");
+    //debug("In BLINK_STATE_START");
     // Nothing to do, fall through to the next state
     
   case BLINK_STATE_ON:
@@ -60,7 +59,7 @@ void NeoPixelHandler::handle() {
     }
     this->pixels.show();
     next_state = BLINK_STATE_WAIT_FOR_ON_EXPIRE;
-    debug("End BLINK_STATE_ON");
+    //debug("End BLINK_STATE_ON");
     break;
     
   case BLINK_STATE_WAIT_FOR_ON_EXPIRE:
@@ -112,8 +111,8 @@ void NeoPixelHandler::handle() {
   case CHASE_STATE_NEXT_PIXEL:
     //debug ("in CHASE_STATE_NEXT_PIXEL");
     this->last_pixel += this->direction;
-    debug ("last pixel is");
-    debug(this->last_pixel);
+    //debug ("last pixel is");
+    //debug(this->last_pixel);
     this->pixels.setPixelColor(this->last_pixel, pixels.Color(this->color.red(), this->color.green(), this->color.blue()));
     this->pixels.show();
     next_state = CHASE_STATE_WAIT_ON_NEXT_PIXEL;
@@ -123,7 +122,7 @@ void NeoPixelHandler::handle() {
     //debug ("in CHASE_STATE_WAIT_ON_NEXT_PIXEL");    
     if ((millis() - this->start_time_millis) >= this->delay_millis) {
       // Timer has expired, reset it
-      debug("timer expired");
+      //debug("timer expired");
       this->start_time_millis = millis();
       
       if (this->direction > 0 && (this->last_pixel >= (this->pixels.numPixels()-1))) {
@@ -156,7 +155,7 @@ void NeoPixelHandler::handle() {
     break;
     
   case RAINBOW_CYCLE_STATE_START:
-    debug("in RAINBOW_CYCLE_STATE_START");
+    //debug("in RAINBOW_CYCLE_STATE_START");
     this->first_pixel_hue = 0; // represents the start color on the color wheel
     this->start_time_millis = millis();
     next_state = RAINBOW_CYCLE_STATE_NEXT_COLOR;

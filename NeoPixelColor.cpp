@@ -1,4 +1,4 @@
-#include "NeoPixelColor.h"
+#include "PinballOutputHandler.h"
 
 NeoPixelColor& NeoPixelColor::RED = *(new NeoPixelColor(255, 0, 0));
 NeoPixelColor& NeoPixelColor::GREEN = *(new NeoPixelColor(0, 255, 0));

@@ -2,9 +2,7 @@
 #include <stdint.h>
 #include <Arduino.h>
 
-#include "Handler.h"
-#include "OutputHandler.h"
-#include "NeoPixelHandler.h"
+#include "PinballOutputHandler.h"
 
 // Implements a null teriminated list of handlers
 HandlerNode::HandlerNode(Handler& handlerRef, HandlerNode *list) : handler(handlerRef) {
