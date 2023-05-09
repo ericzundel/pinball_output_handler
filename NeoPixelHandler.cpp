@@ -2,61 +2,67 @@
 #include <stdlib.h>
 
 #include "NeoPixelColor.h"
-#include "NeoPixelStrip.h"
+#include "NeoPixelHandler.h"
 
 /****************************************************************************
- * NeoPixelStrip class
+ * NeoPixelHandler class
  ****************************************************************************/
 
-NeoPixelStrip::NeoPixelStrip(Adafruit_NeoPixel& p) : pixels(p), color(NeoPixelColor::RED) {
-  Serial.println("NeoPixelStrip::NeoPixelStrip()");
+NeoPixelHandler::NeoPixelHandler(Adafruit_NeoPixel& p) : pixels(p), color(NeoPixelColor::RED) {
+  debug("NeoPixelHandler::NeoPixelHandler()");
   this->off();
   this->handle();
 }
 
-void NeoPixelStrip::handle() {
-  Serial.println("NeoPixelStrip::handle()");
-  delay(1000);
+void NeoPixelHandler::handle() {
+  //debug("NeoPixelHandler::handle()");
+  enum STRIP_STATE next_state = this->state;
+  
   switch (this->state) {
   case BLINK_STATE_START:
-    Serial.println("In BLINK_STATE_START");
-    delay(1000);
+    debug("In BLINK_STATE_START");
     // Nothing to do, fall through to the next state
     
   case BLINK_STATE_ON:
-    Serial.println("In BLINK_STATE_ON");
-    delay(1000);
+    debug("In BLINK_STATE_ON");
+    this->start_time_millis = millis();
     for (int i = 0; i < this->pixels.numPixels(); i++) {
-      this->pixels.setPixelColor(i, this->color.red(), this->color.green(), this->color.green());
+      this->pixels.setPixelColor(i, pixels.Color(this->color.red(), this->color.green(), this->color.blue()));
     }
     this->pixels.show();
-    this->state = BLINK_STATE_WAIT_FOR_ON_EXPIRE;
-    Serial.print("End BLINK_STATE_ON");
-    delay(1000);
+    next_state = BLINK_STATE_WAIT_FOR_ON_EXPIRE;
+    debug("End BLINK_STATE_ON");
     break;
     
   case BLINK_STATE_WAIT_FOR_ON_EXPIRE:
-    if (this->start_time_millis - millis() >= this->delay_millis) {
-      this->state = BLINK_STATE_OFF;
-    } // else stay in this state
+    debug("in BLINK_STATE_WAIT_FOR_ON_EXPIRE");
+    if (millis() - this->start_time_millis >= this->delay_millis) {
+      next_state = BLINK_STATE_OFF;
+    } else {
+            // do nothing. Say in this state.
+    }
     break;
     
   case BLINK_STATE_OFF:
-    Serial.println("In BLINK_STATE_OFF");
+    debug("In BLINK_STATE_OFF");
+    this->start_time_millis = millis();
     this->pixels.clear();
     this->pixels.show();
-    this->state = BLINK_STATE_WAIT_FOR_OFF_EXPIRE;
+    next_state = BLINK_STATE_WAIT_FOR_OFF_EXPIRE;
     break;
     
   case BLINK_STATE_WAIT_FOR_OFF_EXPIRE:
-    if (this->start_time_millis - millis() >= this->delay_millis) {
-      if (this->repeat_times > 0) {
+    debug("in BLINK_STATE_WAIT_FOR_OFF_EXPIRE");
+    if (millis() - this->start_time_millis >= this->delay_millis) {
+      if (this->repeat_times > 1) {
 	this->repeat_times--;
 	this->start_time_millis = millis();
-	this->state = BLINK_STATE_ON;
+	next_state = BLINK_STATE_ON;
       } else {
-	this->state = STATE_TERMINAL;
+	next_state = STATE_TERMINAL;
       }
+    } else {
+      // do nothing. Say in this state.
     }
     break;
 
@@ -65,14 +71,16 @@ void NeoPixelStrip::handle() {
     
   default:
   case STATE_TERMINAL:
-    Serial.println("In STATE_TERMINAL");
+    //debug("In STATE_TERMINAL");
     // fall thorough
     break;    
   }
+
+  this->state = next_state;
 }
 
-void NeoPixelStrip::reset() {
-  Serial.println("reset()");
+void NeoPixelHandler::reset() {
+  debug("reset()");
     this->start_time_millis = 0;
     this->delay_millis = 0;
     this->repeat_times = 0;
@@ -80,13 +88,13 @@ void NeoPixelStrip::reset() {
     this->last_pixel = 0;
 }
 
-void NeoPixelStrip::off() {
+void NeoPixelHandler::off() {
   this->reset();
   this->pixels.clear();
   this->pixels.show();
 }
 
-void NeoPixelStrip::on(NeoPixelColor& color) {
+void NeoPixelHandler::on(NeoPixelColor& color) {
   this->reset();
   this->state = STATE_TERMINAL;
   for (int i = 0; i < this->pixels.numPixels(); i++) {
@@ -95,9 +103,9 @@ void NeoPixelStrip::on(NeoPixelColor& color) {
   this->pixels.show();
 }
 
-void NeoPixelStrip:: blink(NeoPixelColor& color,
-			   uint16_t delay_millis,
-			   uint8_t repeat_times) {
+void NeoPixelHandler::blink(NeoPixelColor& color,
+			   int delay_millis,
+			   int repeat_times) {
   this->reset();
   this->color = color;
   this->start_time_millis = millis();
@@ -108,7 +116,7 @@ void NeoPixelStrip:: blink(NeoPixelColor& color,
   this->state = BLINK_STATE_START;
 }
 
-void NeoPixelStrip::chase(NeoPixelColor& color, uint16_t delay, uint8_t repeat) {
+void NeoPixelHandler::chase(NeoPixelColor& color, int delay, int repeat) {
   this->reset();
   this->color = color;
   this->start_time_millis = millis();

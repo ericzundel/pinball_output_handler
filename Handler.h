@@ -11,4 +11,8 @@ class Handler {
   virtual void handle(); // Implement this method to perform a non-blocking action
 };
 
+static void debug(String value) {
+  //Serial.println(value);
+  //delay(500);
+}
 #endif

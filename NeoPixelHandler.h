@@ -16,25 +16,25 @@ enum STRIP_STATE {
   STATE_TERMINAL,
 };
   
-class NeoPixelStrip: public Handler {
+class NeoPixelHandler: public Handler {
 public:
-  NeoPixelStrip(Adafruit_NeoPixel& pixels);
+  NeoPixelHandler(Adafruit_NeoPixel& pixels);
   void off();
   void on(NeoPixelColor& color);
-  void blink(NeoPixelColor& color, uint16_t delay, uint8_t repeat);
-  void chase(NeoPixelColor& color, uint16_t delay, uint8_t repeat);
+  void blink(NeoPixelColor& color, int delay, int repeat);
+  void chase(NeoPixelColor& color, int delay, int repeat);
   void handle();
   
 private:
   void reset();
 
   Adafruit_NeoPixel& pixels;
-  NeoPixelColor& color;
+  NeoPixelColor color;
 
   // Initialized by reset() method:
-  uint32_t start_time_millis;
-  uint16_t delay_millis;
-  uint8_t repeat_times;
+  int32_t start_time_millis;
+  int delay_millis;
+  int repeat_times;
   uint8_t last_pixel;
   enum STRIP_STATE state;
 

@@ -15,6 +15,9 @@ class NeoPixelColor {
     static NeoPixelColor& BLUE;
     static NeoPixelColor& WHITE;
     static NeoPixelColor& BLACK;
+    static NeoPixelColor& MAGENTA;
+    static NeoPixelColor& PINK;
+    static NeoPixelColor& YELLOW;  
     
  private:
     uint8_t red_value;

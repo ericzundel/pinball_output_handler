@@ -4,6 +4,7 @@
 
 #include "Handler.h"
 #include "OutputHandler.h"
+#include "NeoPixelHandler.h"
 
 // Implements a null teriminated list of handlers
 HandlerNode::HandlerNode(Handler& handlerRef, HandlerNode *list) : handler(handlerRef) {
@@ -20,13 +21,20 @@ void OutputHandler::add(Handler& handler) {
   this->head = new HandlerNode(handler, this->head);
 }
 
+NeoPixelHandler* OutputHandler::add(Adafruit_NeoPixel& pixels) {
+  debug("Adding pixels to OutputHandler");
+  // Reset the pixels
+  pixels.begin();
+  NeoPixelHandler *handler = new NeoPixelHandler(pixels);
+  this->add(*handler);
+  return handler;
+}
+
 // Execute all of the output handlers
 void OutputHandler::handleAll() {
-  Serial.println("handleAll()");
-  delay(1000);
+  //debug("handleAll()");
   for (HandlerNode *node = this->head; node != NULL; node = node->next) {
-    Serial.println("Calling next handler");
-    delay(1000);
+    //debug("Calling next handler");
     node->handler.handle();
   }
 }
