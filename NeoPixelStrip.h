@@ -1,43 +1,43 @@
 #ifndef NEOPIXELSTRIP_H
 #define NEOPIXELSTRIP_H
 
-#include <Adafruit_Neopixel.h>
+#include <stdint.h>
+#include <Adafruit_NeoPixel.h>
 #include "NeoPixelColor.h"
+#include "Handler.h"
 
-
-private class NeoPixelAction {
-  private uint32_t start_millis;
-  private uint16_t time_millis;
-  private uint8_t repeat;
-}
-
-class NeoPixelActionNone extends NeoPixelAction {
-  public NeoPixelActionNone();
-}
-
-class NeoPixelActionBlink extends NeoPixelAction {
-  public NeoPixelActionBlink(NeoPixelColor color);
-}
-
-class NeoPixelActionChase extends NeoPixelAction {
-  public NeoPixelActionChase();
-}
-
-class NeopixelStrip {
+enum STRIP_STATE {
+  BLINK_STATE_START = 0,
+  BLINK_STATE_ON,
+  BLINK_STATE_WAIT_FOR_ON_EXPIRE,
+  BLINK_STATE_OFF,
+  BLINK_STATE_WAIT_FOR_OFF_EXPIRE,
+  CHASE_STATE_START,
+  STATE_TERMINAL,
+};
+  
+class NeoPixelStrip: public Handler {
 public:
-  NeoPixelStrip();
+  NeoPixelStrip(Adafruit_NeoPixel& pixels);
   void off();
   void on(NeoPixelColor& color);
-  void blink(NeoPixelColor& color, uint32_t delay, uint8_t repeat);
-  void chase(NeoPixelColor& color, uint32_t delay, uint8_t repeat);
+  void blink(NeoPixelColor& color, uint16_t delay, uint8_t repeat);
+  void chase(NeoPixelColor& color, uint16_t delay, uint8_t repeat);
+  void handle();
   
-  // Private members
+private:
+  void reset();
 
-  private uint8_t pin;
-  private uint8_t num_pixels;
-  
-  //
-  private NeoPixelAction action;
-}
+  Adafruit_NeoPixel& pixels;
+  NeoPixelColor& color;
 
-#endif // NEOPIXEL_OBJECT_H
+  // Initialized by reset() method:
+  uint32_t start_time_millis;
+  uint16_t delay_millis;
+  uint8_t repeat_times;
+  uint8_t last_pixel;
+  enum STRIP_STATE state;
+
+};
+
+#endif // NEOPIXELSTRIP_H

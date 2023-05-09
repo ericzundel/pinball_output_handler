@@ -20,10 +20,6 @@ class NeoPixelColor {
     uint8_t red_value;
     uint8_t green_value;
     uint8_t blue_value;
-
-
 };
-
-
 
 #endif //NeoPixelColor_h
