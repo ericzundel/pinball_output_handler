@@ -1,4 +1,4 @@
-RELEASE=0.1.1
+RELEASE=0.1.2
 PREFIX=PinballOutputHandler
-git archive --format=zip -o ${PREFIX}-${RELEASE}.zip @
+git archive --prefix=${PREFIX}/ --format=zip -o ${PREFIX}-${RELEASE}.zip @
 
