@@ -2,15 +2,12 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 
-#include "OutputHandler.h"
-#include "NeoPixelColor.h"
-#include "NeoPixelStrip.h"
-
-//Adafruit_NeoPixel strip1(10, GPIO17, NEO_GRB + NEO_KHZ800); 
-//Adafruit_NeoPixel strip2(10, GPIO16, NEO_GRB + NEO_KHZ800); // port 21
+#include <OutputHandler.h>
+#include <NeoPixelColor.h>
+#include <NeoPixelHandler.h>
  
 OutputHandler outputHandler;
-NeoPixelHandler *handlers[6]; // control 6 strips
+NeoPixelHandler *handlers[6]; // to hold handlers that can control 6 strips
 
 void setup() {
   Serial.begin(9600);
@@ -19,6 +16,8 @@ void setup() {
   delay(5000);
   Serial.println("Initializing");
   Serial.println("Send a number to simulate a button");
+  
+  // Add six handlers that have 10 LEDs each on different output pins of the Arduino
   handlers[0] = outputHandler.add(*(new Adafruit_NeoPixel(10, 17, NEO_GRB + NEO_KHZ800)));
   handlers[1] = outputHandler.add(*(new Adafruit_NeoPixel(10, 19, NEO_GRB + NEO_KHZ800)));
   handlers[2] = outputHandler.add(*(new Adafruit_NeoPixel(10, 21, NEO_GRB + NEO_KHZ800)));
