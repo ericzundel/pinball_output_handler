@@ -15,4 +15,9 @@ static void debug(String value) {
   //Serial.println(value);
   //delay(500);
 }
+
+static void debug(int value) {
+  Serial.println(value);
+  delay(100);
+}
 #endif
